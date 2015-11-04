@@ -5,6 +5,7 @@
 /* eslint strict:0 */
 (function(root) {
   var component = require('./twilio-common-bundle');
+  /* globals define */
   if (typeof define === 'function' && define.amd) {
     define([], function() { return component; });
   } else {
