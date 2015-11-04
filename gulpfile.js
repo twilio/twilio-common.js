@@ -1,6 +1,7 @@
 'use strict';
 
 var browserify = require('browserify');
+var cheerio = require('cheerio');
 var del = require('del');
 var eslint = require('eslint/lib/cli');
 var fs = require('fs');
@@ -8,8 +9,9 @@ var gulp = require('gulp');
 var newer = require('gulp-newer');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
-var spawn = require('child_process').spawn;
 var source = require('vinyl-source-stream');
+var spawn = require('child_process').spawn;
+var streamFromPromise = require('stream-from-promise');
 var through = require('through2');
 var uglify = require('gulp-uglify');
 var util = require('gulp-util');
@@ -157,23 +159,54 @@ gulp.task(distMinJs, [linted, distJs], function() {
 // dist/docs
 // ---------
 
-gulp.task(distDocs, function(done) {
+gulp.task(distDocs, function() {
   gulp.src([libJsGlob, srcJs], { read: false })
     .pipe(newer(distDocs + '/index.html'))
-    .pipe(then(function() {
-      del(distDocs).then(function() {
-        var child = spawn('node',
-          [jsdoc, '-r', lib, '-d', distDocs],
-          { stdio: 'inherit' });
-        child.on('close', function(code) {
-          if (code) {
-            done(new util.PluginError('docs', new Error('JSDoc error')));
-            return;
-          }
-          done();
+    .pipe(thenP(function() {
+      return del(distDocs).then(function() {
+        return new Promise(function(resolve, reject) {
+          var child = spawn('node',
+            [jsdoc, '-r', lib, '-d', distDocs],
+            { stdio: 'inherit' });
+          child.on('close', function(code) {
+            if (code) {
+              reject(new util.PluginError('docs', new Error('JSDoc error')));
+              return;
+            }
+            resolve();
+          });
         });
-      }, done);
-    }));
+      });
+    }))
+    .pipe(then(function() {
+      return gulp.src(distDocs + '/*.html');
+    }))
+    .pipe(map(function(file) {
+      var $ = cheerio.load(file.contents.toString());
+
+      // Prefix public constructors.
+      var div = $('.container-overview');
+      var name = $('h4.name', div);
+      if (name.html()) {
+        name.html(name.html().replace(/new /, 'new <span style="color: #999">Twilio.</span>'));
+      }
+
+      // Rewrite navigation.
+      var nav = $('nav');
+      nav.html([
+        '<h2>',
+          '<a href="index.html">Home</a>',
+        '</h2>',
+        '<h3>Classes</h3>',
+        '<ul>',
+          '<li><a href="AccessManager.html"><span style="color: #999">Twilio.</span>AccessManager</a></li>',
+        '</ul>'
+      ].join(''));
+
+      file.contents = new Buffer($.html());
+      return file;
+    }))
+    .pipe(gulp.dest(distDocs));
 });
 
 gulp.task('docs', [distDocs]);
@@ -196,5 +229,20 @@ function then(next) {
     }
     stream.on('data', this.push.bind(this));
     stream.on('end', end);
+  });
+}
+
+function thenP(nextP) {
+  return then(function nextS(as) {
+    var promise = nextP(as);
+    var stream = streamFromPromise(promise);
+    return stream;
+  });
+}
+
+function map(fn) {
+  return through.obj(function(a, _, done) {
+    this.push(fn(a));
+    return done();
   });
 }
