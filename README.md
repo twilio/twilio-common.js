@@ -1,34 +1,47 @@
 twilio-common
 =============
 
-twilio-common contains functionality shared across Twilio SDKs. Most notably,
-it contains the [`AccessManager`](lib/accessmanager.js).
+[![Build Status](https://travis-ci.org/twilio/twilio-common.svg?branch=master)](https://travis-ci.org/twilio/twilio-common)
+
+twilio-common contains functionality shared among Twilio SDKs, such as
+[`AccessManager`](lib/accessmanager.js).
 
 Install
 -------
 
-### From NPM & Bower
+twilio-common is a transitive dependency of one or more Twilio SDKs, so you
+should not have to install it directly; however, you can install it using
+[bower](http://bower.io) or [npm](https://www.npmjs.com).
 
-It is not recommended to install this package directly since Twilio SDKs will
-specify it themselves; however, if you so choose, you can install it from
-[NPM](https://www.npmjs.com/package/twilio-common) with
-
-```
-npm install twilio-common
-```
-
-or install using [bower](http://bower.io) with
+### Bower
 
 ```
 bower install twilio-common
 ```
 
-### From Source
-
-Clone the repo, install, and run [gulp](http://gulpjs.com/):
+### NPM
 
 ```
-git clone https://code.hq.twilio.com/client/twilio-common.js
+npm install twilio-common
+```
+
+Contributing
+------------
+
+Bug fixes welcome! If you're not familiar with the GitHub pull
+request/contribution process, [this is a nice tutorial]
+(https://gun.io/blog/how-to-github-fork-branch-and-pull-request/).
+
+### Getting Started
+
+Fork and clone the repository. Install dependencies with
+
+```
 npm install
+```
+
+Then, build with [gulp](http://gulpjs.com):
+
+```
 gulp
 ```
