@@ -1,5 +1,6 @@
 .DS_Store
 .linted
+.unit-tested
 dist
 node_modules
 src/twilio-common-bundle.js

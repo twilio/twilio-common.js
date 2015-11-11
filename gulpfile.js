@@ -9,6 +9,7 @@ var gulp = require('gulp');
 var newer = require('gulp-newer');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
+var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
 var spawn = require('child_process').spawn;
 var streamFromPromise = require('stream-from-promise');
@@ -24,9 +25,13 @@ var version = pkg.version;
 var license = 'LICENSE.md';
 var linted = '.linted';
 var jsdoc = 'node_modules/jsdoc/jsdoc.js';
+var mocha = 'node_modules/mocha/bin/_mocha';
+
+var unitTested = '.unit-tested';
+var unitTestGlob = 'test/**/*.js';
 
 var lib = 'lib';
-var libJsGlob = 'lib/*.js';
+var libJsGlob = 'lib/**/*.js';
 
 var src = 'src';
 var srcJs = src + '/' + name + '.js';
@@ -47,7 +52,8 @@ gulp.task('clean', function(done) {
   Promise.all([
     del(dist),
     del(linted),
-    del(srcBundleJs)
+    del(srcBundleJs),
+    del(unitTested)
   ]).then(function() { done() }, done);
 });
 
@@ -90,19 +96,77 @@ function lint(files) {
     }));
 }
 
+// Test
+// ----
+
+gulp.task('test', function() {
+  return runSequence('unit-test');
+});
+
+// Unit Test
+// ---------
+
+gulp.task(unitTested, function() {
+  if (process.env.SKIP_TEST || process.env.SKIP_UNIT) {
+    return;
+  }
+  return unitTest([libJsGlob, unitTestGlob], newer(unitTested))
+    .then(function(changed) {
+      if (changed.length) {
+        fs.writeFile(unitTested, '');
+      }
+    });
+});
+
+gulp.task('unit-test', function() {
+  return unitTest([libJsGlob, unitTestGlob]);
+});
+
+function unitTest(files, filter) {
+  return new Promise(function(resolve, reject) {
+    return gulp.src(files, { read: false })
+      .pipe(filter || util.noop())
+      .pipe(then(function(files) {
+        if (files.length) {
+          var args = getPaths(files);
+          args.unshift(mocha);
+          var child = safeSpawn('node',
+            args,
+            { stdio: 'inherit' });
+          child.on('close', function(code) {
+            if (code) {
+              reject(new util.PluginError('unit-test', new Error('Mocha error')));
+              return;
+            }
+            resolve(files);
+          });
+          return;
+        }
+        resolve(files);
+      }));
+  });
+}
+
 // src/twilio-common-bundle.js
 // --------------------------
 
-gulp.task(srcBundleJs, function() {
-  return gulp.src(libJsGlob, { read: false })
-    .pipe(newer(srcBundleJs))
-    .pipe(then(function() {
-      var b = browserify();
-      b.add(main);
-      return b.bundle();
-    }))
-    .pipe(source(bundleJs))
-    .pipe(gulp.dest(src));
+gulp.task(srcBundleJs, function(done) {
+  return runSequence(
+    linted,
+    unitTested,
+    function() {
+      return gulp.src(libJsGlob, { read: false })
+        .pipe(then(function() {
+          var b = browserify();
+          b.add(main);
+          return b.bundle();
+        }))
+        .pipe(source(bundleJs))
+        .pipe(gulp.dest(src))
+        .once('error', done)
+        .once('end', done);
+    }
+  );
 });
 
 // dist/twilio-common.js
@@ -139,7 +203,7 @@ gulp.task(distJs, [srcBundleJs], function() {
 // dist/twilio-common.min.js
 // -----------------------
 
-gulp.task(distMinJs, [linted, distJs], function() {
+gulp.task(distMinJs, [distJs], function() {
   var firstComment = true;
   return gulp.src(distJs)
     .pipe(newer(distMinJs))
@@ -246,3 +310,22 @@ function map(fn) {
     return done();
   });
 }
+
+function safeSpawn() {
+  var child = spawn.apply(this, arguments);
+  safeSpawn._children.push(child);
+  return child;
+}
+
+safeSpawn._children = [];
+
+safeSpawn.killAll = function killAll() {
+  safeSpawn._children.splice(0).forEach(function(child) {
+    child.kill();
+  });
+};
+
+process.on('SIGINT', function() {
+  safeSpawn.killAll();
+  process.exit(1);
+});

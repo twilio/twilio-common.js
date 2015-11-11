@@ -14,4 +14,4 @@
       root.Twilio[componentName] = component[componentName];
     }
   }
-})(window || global || this);
+})(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : this);
