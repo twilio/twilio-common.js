@@ -6,6 +6,7 @@ var del = require('del');
 var eslint = require('eslint/lib/cli');
 var fs = require('fs');
 var gulp = require('gulp');
+var insert = require('gulp-insert');
 var newer = require('gulp-newer');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
@@ -155,16 +156,29 @@ gulp.task(srcBundleJs, function(done) {
     linted,
     unitTested,
     function() {
+      var id;
       return gulp.src(libJsGlob, { read: false })
         .pipe(then(function() {
           var b = browserify();
           b.add(main);
+          b.on('dep', function(dep) {
+            if (dep.entry) {
+              id = id || dep.id;
+            }
+          });
           return b.bundle();
         }))
         .pipe(source(bundleJs))
         .pipe(gulp.dest(src))
         .once('error', done)
-        .once('end', done);
+        .once('end', function() {
+          return gulp.src([srcBundleJs])
+            .pipe(insert.wrap('(function unpack(){var id=' + id + ', bundle=',
+                              'return bundle(id)})();'))
+            .pipe(gulp.dest(src))
+            .once('error', done)
+            .once('end', done);
+        });
     }
   );
 });

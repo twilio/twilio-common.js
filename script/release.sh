@@ -123,7 +123,7 @@ done
 git rm -rf --ignore-unmatch dist
 gulp clean
 gulp
-git add -f dist/${name}.js dist/${name}.min.js
+git add -f dist/${name}.js dist/${name}.min.js dist/docs
 git commit -m ${release}
 git tag ${release}
 git push origin master --tags

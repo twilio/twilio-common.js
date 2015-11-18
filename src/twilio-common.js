@@ -9,9 +9,9 @@
   if (typeof define === 'function' && define.amd) {
     define([], function() { return component; });
   } else {
-    root.Twilio = root.Twilio || function Twilio() {};
+    var Twilio = root.Twilio = root.Twilio || {};
     for (var componentName in component) {
-      root.Twilio[componentName] = component[componentName];
+      Twilio[componentName] = component[componentName];
     }
   }
 })(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : this);

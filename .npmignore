@@ -1,3 +1,5 @@
 .linted
+.travis.yml
+.unit-tested
 dist/docs
 src/twilio-common-bundle.js
