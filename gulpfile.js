@@ -159,7 +159,9 @@ gulp.task(srcBundleJs, function(done) {
       var id;
       return gulp.src(libJsGlob, { read: false })
         .pipe(then(function() {
-          var b = browserify();
+          var b = browserify({
+            detectGlobals: false
+          });
           b.add(main);
           b.on('dep', function(dep) {
             if (dep.entry) {
