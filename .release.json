@@ -1,9 +1,9 @@
 {
   "type": "JavaScript",
   "travis": "pro",
-  "slug": "twilio/twilio-common",
+  "slug": "twilio/twilio-common.js",
   "env": {
-    "GH_REF": "github.com/twilio/twilio-common.git"
+    "GH_REF": "github.com/twilio/twilio-common.js.git"
   },
   "plans": {
     "release": {

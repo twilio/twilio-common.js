@@ -1,29 +1,60 @@
-twilio-common
-=============
+twilio-common.js
+================
 
-[![Build Status](https://travis-ci.org/twilio/twilio-common.svg?branch=master)](https://travis-ci.org/twilio/twilio-common)
+[![Build Status](https://travis-ci.org/twilio/twilio-common.js.svg?branch=master)](https://travis-ci.org/twilio/twilio-common.js)
 
-twilio-common contains functionality shared among Twilio SDKs, such as
-[`AccessManager`](lib/accessmanager.js).
+twilio-common.js contains functionality shared between Twilio SDKs, including
+the Conversations and IP Messaging SDKs.
 
-Install
--------
+Including
+---------
 
-twilio-common is a transitive dependency of one or more Twilio SDKs, so you
-should not have to install it directly; however, you can install it using
-[bower](http://bower.io) or [npm](https://www.npmjs.com).
+### CDN
 
-### Bower
+Releases of twilio-common.js are hosted on a CDN, and you can include these
+directly in your web app using a &lt;script&gt; tag.
+
+```html
+<script src="//media.twiliocdn.com/sdk/js/common/v0.1/twilio-common.min.js"></script>
+```
+
+### NPM & Bower
+
+You can also include twilio-common.js with either [npm](https://www.npmjs.com)
+or [bower](http://bower.io/). Including twilio-common.js this way allows you to
+integrate flexibly with build systems like [Browserify](http://browserify.org)
+and [webpack](https://webpack.github.io).
+
+With npm:
 
 ```
-bower install twilio-common
+npm install twilio-common --save
 ```
 
-### NPM
+With bower:
 
 ```
-npm install twilio-common
+bower install twilio-common --save
 ```
+
+Building
+--------
+
+Fork and clone the repository. Then, install dependencies with
+
+```
+npm install
+npm install gulp -g
+```
+
+Finally, run
+
+```
+gulp
+```
+
+The builds and docs will be placed in the `dist/` directory.
+
 
 Contributing
 ------------
@@ -31,17 +62,3 @@ Contributing
 Bug fixes welcome! If you're not familiar with the GitHub pull
 request/contribution process, [this is a nice tutorial]
 (https://gun.io/blog/how-to-github-fork-branch-and-pull-request/).
-
-### Getting Started
-
-Fork and clone the repository. Install dependencies with
-
-```
-npm install
-```
-
-Then, build with [gulp](http://gulpjs.com):
-
-```
-gulp
-```
