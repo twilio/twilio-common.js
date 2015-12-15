@@ -1,7 +1,7 @@
 twilio-common.js
 ================
 
-[![Build Status](https://travis-ci.org/twilio/twilio-common.js.svg?branch=master)](https://travis-ci.org/twilio/twilio-common.js)
+[![NPM](https://img.shields.io/npm/v/twilio-common.svg)](https://www.npmjs.com/package/twilio-common) [![Build Status](https://travis-ci.org/twilio/twilio-common.js.svg?branch=master)](https://travis-ci.org/twilio/twilio-common.js)
 
 twilio-common.js contains functionality shared between Twilio SDKs, including
 the Conversations and IP Messaging SDKs.
