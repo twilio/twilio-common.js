@@ -22,6 +22,7 @@
         "git add -f dist",
         "git commit -m \"${RELEASE_VERSION}\"",
         "git tag ${RELEASE_VERSION}",
+        "git remote set-url origin \"https://${GH_TOKEN}@${GH_REF}\"",
         "git rebase HEAD ${BRANCH}",
         "git push origin ${BRANCH} --tags"
       ]
