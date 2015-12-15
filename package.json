@@ -36,7 +36,7 @@
     "run-sequence": "^1.1.4",
     "stream-from-promise": "^0.1.0",
     "through2": "^2.0.0",
-    "twilio": "git@github.com:twilio/node-private.git#b548db8ffcb17b8114169bc3c0c321a58349ce89",
+    "twilio": "^2.7.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "engines": {

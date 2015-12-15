@@ -31,14 +31,14 @@ var config3 = {
 function generateAccessToken(config, ttl) {
   config = config || config1;
   var accessTokenGenerator = new twilio.AccessToken(
-    config.accountSid, config.signingKeySid, config.signingKeySecret, ttl);
+    config.accountSid, config.signingKeySid, config.signingKeySecret, { ttl: ttl });
   accessTokenGenerator.identity = config.identity;
   accessTokenGenerator.addGrant(
     new twilio.AccessToken.ConversationsGrant({
       configurationProfileSid: config.configurationProfileSid
     })
   );
-  return accessTokenGenerator.generate();
+  return accessTokenGenerator.toJwt();
 }
 
 describe('AccessManager', function() {
