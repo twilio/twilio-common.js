@@ -1,5 +1,6 @@
 .DS_Store
 .linted
+.typechecked
 .unit-tested
 dist
 node_modules
