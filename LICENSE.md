@@ -79,7 +79,7 @@ This software includes code under the following license.
     OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
     USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-This software includes es6-promise package code under the following license:
+This software includes es6-promise under the following license:
 
     Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors
 
