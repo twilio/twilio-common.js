@@ -1,6 +1,6 @@
 {
   "name": "twilio-common",
-  "version": "0.1.5-dev",
+  "version": "0.1.5",
   "description": "Twilio Common JavaScript library",
   "license": "BSD",
   "authors": [
