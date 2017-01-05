@@ -53,5 +53,8 @@
   "dependencies": {
     "es6-promise": "^3.1.2",
     "xmlhttprequest": "^1.8.0"
+  },
+  "browser": {
+    "xmlhttprequest": "./src/xmlhttprequest.js"
   }
 }
