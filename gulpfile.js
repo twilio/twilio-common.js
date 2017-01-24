@@ -161,7 +161,6 @@ gulp.task(srcBundleJs, function(done) {
         .pipe(then(function() {
           var b = browserify();
           b.add(main);
-          b.ignore('xmlhttprequest');
           b.on('dep', function(dep) {
             if (dep.entry) {
               id = id || dep.id;

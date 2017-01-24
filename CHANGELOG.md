@@ -1,11 +1,7 @@
 0.1.6
 =====
 
-Bug Fixes
----------
-
-- We now provide a browser-alternative for twilio-common.js's dependency on
-  xmlhttprequest.
+This release updates internal APIs.
 
 0.1.5
 =====

@@ -1,1 +1,1 @@
-module.exports = XMLHttpRequest;
+exports.XMLHttpRequest = XMLHttpRequest;
