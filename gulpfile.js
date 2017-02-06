@@ -4,6 +4,7 @@ var browserify = require('browserify');
 var cheerio = require('cheerio');
 var del = require('del');
 var eslint = require('eslint/lib/cli');
+var flow = require('flow-bin');
 var fs = require('fs');
 var gulp = require('gulp');
 var insert = require('gulp-insert');
@@ -25,6 +26,7 @@ var version = pkg.version;
 
 var license = 'LICENSE.md';
 var linted = '.linted';
+var typechecked = '.typechecked';
 var jsdoc = 'node_modules/jsdoc/jsdoc.js';
 var mocha = 'node_modules/mocha/bin/_mocha';
 
@@ -54,6 +56,7 @@ gulp.task('clean', function(done) {
     del(dist),
     del(linted),
     del(srcBundleJs),
+    del(typechecked),
     del(unitTested)
   ]).then(function() { done() }, done);
 });
@@ -92,6 +95,50 @@ function lint(files) {
           done(new util.PluginError('lint', new Error('ESLint error')));
           return;
         }
+      }
+      done(null, files.length);
+    }));
+}
+
+// Typecheck
+// ---------
+
+gulp.task(typechecked, function(done) {
+  typecheck(newer(typechecked), function(error, changed) {
+    if (error) {
+      done(error);
+      return;
+    } else if (!changed) {
+      done();
+      return;
+    }
+    fs.writeFile(typechecked, '', done);
+  });
+});
+
+gulp.task('typecheck', function(done) {
+  typecheck(done);
+});
+
+function typecheck() {
+  var args = [].slice.call(arguments);
+  var filter = args.length === 2 ? args[0] : util.noop();
+  var done = args.length === 2 ? args[1] : args[0];
+  return gulp.src(libJsGlob, { read: false })
+    .pipe(filter)
+    .pipe(then(function(files) {
+      if (files.length) {
+        var child = safeSpawn(flow,
+          ['check', 'lib'],
+          { stdio: 'inherit' });
+        child.on('close', function(code) {
+          if (code) {
+            done(new util.PluginError('typecheck', new Error('Flow error')));
+            return;
+          }
+          done(null, files.length);
+        });
+        return;
       }
       done(null, files.length);
     }));
@@ -154,6 +201,7 @@ function unitTest(files, filter) {
 gulp.task(srcBundleJs, function(done) {
   return runSequence(
     linted,
+    typechecked,
     unitTested,
     function() {
       var id;
