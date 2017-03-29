@@ -281,6 +281,21 @@ describe('AccessManager', function() {
             });
           });
 
+          it('should emit a "tokenWillExpire" event with the AccessManager', function(done) {
+            var accessToken = generateAccessToken(config1, expired ? -1 : undefined);
+            var accessManager = new AccessManager(accessToken);
+            accessManager.on('tokenUpdated', function() {
+              accessManager.on('tokenWillExpire', function(_accessManager) {
+                try {
+                  assert.equal(accessManager, _accessManager);
+                } catch (error) {
+                  done(error);
+                  return;
+                }
+                done();
+              });
+            });
+          })
         }
 
       });
@@ -497,7 +512,24 @@ describe('AccessManager', function() {
                 });
               }, done);
             });
-
+            it('should emit a "tokenWillExpire" event with the AccessManager', function(done) {
+              var accessToken = generateAccessToken(config1);
+              var accessManager = new AccessManager(accessToken);
+              var newToken = generateAccessToken(config2, expired ? -1 : undefined);
+              accessManager.updateToken(newToken).then(function() {
+                accessManager.on('tokenUpdated', function() {
+                  accessManager.on('tokenWillExpire', function(_accessManager) {
+                    try {
+                      assert.equal(accessManager, _accessManager);
+                    } catch (error) {
+                      done(error);
+                      return;
+                    }
+                    done();
+                  });
+                });
+              }, done);
+            });
           });
 
         }
