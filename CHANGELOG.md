@@ -1,7 +1,11 @@
 0.1.6
 =====
 
-This release updates internal APIs.
+New Features
+------------
+
+- Added a new event, "tokenWillExpire", to AccessManager; this event is raised
+  up to three minutes before the Access Token's expiration time.
 
 0.1.5
 =====
