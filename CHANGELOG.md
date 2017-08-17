@@ -1,3 +1,11 @@
+0.1.7
+=====
+
+New Features
+------------
+
+- Added support for React Native
+
 0.1.6
 =====
 
